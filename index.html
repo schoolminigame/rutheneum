@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Minigame Rutheneum</title>
+  <style>
+    body {
+      background: linear-gradient(to bottom, #87ceeb, #f0f8ff);
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      overflow-x: hidden;
+    }
+    canvas {
+      background: #70c5ce;
+      display: none;
+      margin: 20px auto;
+      border: 4px solid #333;
+      border-radius: 12px;
+      touch-action: manipulation;
+    }
+    .donate-btn, .play-btn {
+      display: inline-block;
+      margin-top: 15px;
+      padding: 12px 20px;
+      background-color: #ff5f5f;
+      color: white;
+      font-weight: bold;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: background 0.3s;
+      font-size: 18px;
+    }
+    .donate-btn:hover, .play-btn:hover {
+      background-color: #ff3f3f;
+    }
+    .highscores {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+    #countdown {
+      font-size: 50px;
+      font-weight: bold;
+      position: absolute;
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: none;
+    }
+    #playerNameDisplay {
+      display: none;
+      font-size: 20px;
+      margin-top: 10px;
+    }
+  </style>
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+</head>
+<body>
+  <h1>🎮 Minigame Rutheneum</h1>
+  
+  <input type="text" id="usernameInput" placeholder="Dein Name" maxlength="12">
+  <button class="play-btn" onclick="startGame()">▶️ Spielen</button>
+  
+  <h2 id="playerNameDisplay"></h2>
+  <canvas id="gameCanvas" width="320" height="480"></canvas>
+  <div id="countdown"></div>
+  
+  <br/>
+  <a class="donate-btn" href="https://ko-fi.com/schoolminigame" target="_blank">☕ Unterstützen</a>
+  <div class="highscores" id="highscores"></div>
+
+  <script>
+    // Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyA7MPdJVoY4dtJK5NtVpagmjWDLP6lxulE",
+      authDomain: "miinigame-rutheneum.firebaseapp.com",
+      databaseURL: "https://miinigame-rutheneum-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "miinigame-rutheneum",
+      storageBucket: "miinigame-rutheneum.firebasestorage.app",
+      messagingSenderId: "8331688238",
+      appId: "1:8331688238:web:b85657e7895bf28c1e22bf",
+      measurementId: "G-GQYZJT93RJ"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+
+    let birdY, birdVel, gravity = 0.5, jump = -8;
+    let pipes, pipeWidth = 50, gap = 120, frame, score, gameOver = false;
+    let currentUsername = "";
+
+    function resetGame() {
+      birdY = 200;
+      birdVel = 0;
+      pipes = [];
+      frame = 0;
+      score = 0;
+      gameOver = false;
+    }
+
+    function startGame() {
+      currentUsername = document.getElementById("usernameInput").value.trim();
+      if (!currentUsername) {
+        alert("Bitte gib einen Namen ein!");
+        return;
+      }
+      document.querySelector(".play-btn").style.display = "none";
+      document.getElementById("usernameInput").style.display = "none";
+      document.getElementById("playerNameDisplay").textContent = "👤 " + currentUsername;
+      document.getElementById("playerNameDisplay").style.display = "block";
+      
+      startCountdown();
+    }
+
+    function startCountdown() {
+      let count = 3;
+      const countdownEl = document.getElementById("countdown");
+      countdownEl.style.display = "block";
+      countdownEl.textContent = count;
+
+      const interval = setInterval(() => {
+        count--;
+        if (count > 0) {
+          countdownEl.textContent = count;
+        } else {
+          clearInterval(interval);
+          countdownEl.style.display = "none";
+          canvas.style.display = "block";
+          resetGame();
+          update();
+        }
+      }, 1000);
+    }
+
+    function drawBird() {
+      ctx.fillStyle = "yellow";
+      ctx.beginPath();
+      ctx.arc(50, birdY, 12, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    function drawPipes() {
+      ctx.fillStyle = "green";
+      pipes.forEach(pipe => {
+        ctx.fillRect(pipe.x, 0, pipeWidth, pipe.top);
+        ctx.fillRect(pipe.x, pipe.top + gap, pipeWidth, canvas.height - pipe.top - gap);
+      });
+    }
+
+    function update() {
+      if (gameOver) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      birdVel += gravity;
+      birdY += birdVel;
+
+      if (frame % 90 === 0) {
+        let top = Math.random() * (canvas.height - gap - 100) + 20;
+        pipes.push({ x: canvas.width, top });
+      }
+
+      pipes.forEach(pipe => {
+        pipe.x -= 2;
+        if (pipe.x + pipeWidth === 48) score++;
+      });
+      pipes = pipes.filter(pipe => pipe.x + pipeWidth > 0);
+
+      if (birdY > canvas.height || birdY < 0 ||
+          pipes.some(pipe => pipe.x < 62 && pipe.x + pipeWidth > 38 &&
+            (birdY < pipe.top || birdY > pipe.top + gap))) {
+        endGame();
+        return;
+      }
+
+      drawPipes();
+      drawBird();
+
+      ctx.fillStyle = "black";
+      ctx.font = "20px Arial";
+      ctx.fillText("Score: " + score, 10, 25);
+
+      frame++;
+      requestAnimationFrame(update);
+    }
+
+    function endGame() {
+      gameOver = true;
+      ctx.fillStyle = "red";
+      ctx.font = "30px Arial";
+      ctx.textAlign = "center";
+      ctx.fillText("Game Over!", canvas.width / 2, canvas.height / 2);
+      ctx.textAlign = "left";
+
+      saveHighscore(score);
+
+      setTimeout(() => {
+        document.querySelector(".play-btn").style.display = "inline-block";
+        document.getElementById("usernameInput").style.display = "inline-block";
+        document.getElementById("playerNameDisplay").style.display = "none";
+        canvas.style.display = "none";
+      }, 2000);
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function saveHighscore(score) {
+      const ref = db.ref("highscores");
+      ref.once("value", snapshot => {
+        const scores = [];
+        snapshot.forEach(data => scores.push({ key: data.key, ...data.val() }));
+        scores.sort((a, b) => b.score - a.score);
+        const lowestTopScore = scores.length >= 5 ? scores[4].score : -Infinity;
+
+        if (scores.length < 5 || score > lowestTopScore) {
+          const entry = { username: currentUsername || "Unbekannt", score: score, time: Date.now() };
+          ref.push(entry);
+
+          if (scores.length >= 5) {
+            ref.once("value", snap => {
+              const all = [];
+              snap.forEach(d => all.push({ key: d.key, ...d.val() }));
+              all.sort((a, b) => b.score - a.score);
+              all.slice(5).forEach(item => ref.child(item.key).remove());
+            });
+          }
+        }
+      });
+    }
+
+    function loadHighscores() {
+      db.ref("highscores")
+        .orderByChild("score")
+        .limitToLast(5)
+        .on("value", snapshot => {
+          const scores = [];
+          snapshot.forEach(data => scores.push(data.val()));
+          scores.sort((a, b) => b.score - a.score);
+
+          let html = "<h3>🏆 Highscores</h3>";
+          scores.forEach((s, i) => {
+            html += `<div>${i + 1}. <strong>${escapeHtml(s.username)}</strong> - ${s.score} Punkte</div>`;
+          });
+          document.getElementById("highscores").innerHTML = html;
+        });
+    }
+
+    document.addEventListener("keydown", e => {
+      if (!gameOver && canvas.style.display === "block") birdVel = jump;
+    });
+    canvas.addEventListener("touchstart", e => {
+      e.preventDefault();
+      if (!gameOver && canvas.style.display === "block") birdVel = jump;
+    });
+
+    loadHighscores();
+  </script>
+</body>
+</html>
