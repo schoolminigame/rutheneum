@@ -1,0 +1,169 @@
+body {
+  font-family: Arial, sans-serif;
+  background: #f0f8ff;
+  margin: 0;
+  padding: 20px;
+  text-align: center;
+  color: #333;
+}
+
+.container {
+  max-width: 500px;
+  margin: auto;
+}
+
+input#usernameInput {
+  padding: 10px;
+  font-size: 16px;
+  width: 60%;
+  margin-bottom: 10px;
+  border-radius: 10px;
+}
+
+button.play-btn {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 10px;
+  display: inline-block;
+  margin-top: 15px;
+  padding: 12px 20px;
+  background-color: hsl(0, 100%, 30%);
+  color: white;
+  font-weight: bold;
+  text-decoration: none;
+  transition: background 0.3s;
+  font-size: 18px;
+}
+button.play-btn:hover{
+  background-color: hsl(0, 100%, 40%);
+}
+button.play-btn:active{
+  background-color: hsl(0, 100%, 50%);
+}
+
+#playerNameDisplay {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+#highscoresStart, #highscoresGame {
+  margin-top: 20px;
+  text-align: left;
+}
+
+#highscoresGame div.highlight {
+  font-weight: bold;
+  color: blue;
+}
+
+canvas {
+  border: 2px solid #333;
+  border-radius: 8px;
+}
+
+#countdown {
+  margin-bottom: 10px;
+  color: #222;
+}
+
+.donate-btn {
+  display: inline-block;
+  margin-top: 15px;
+  padding: 12px 20px;
+  background-color: hsl(0, 100%, 30%);
+  color: white;
+  font-weight: bold;
+  border-radius: 10px;
+  text-decoration: none;
+  font-size: 18px;
+  border: 2px,black,solid;
+ }
+
+.donate-btn:hover{
+  background-color: hsl(0, 100%, 40%);
+}
+.donate-btn:active{
+  background-color: hsl(0, 100%, 50%);
+}
+
+
+
+#feedbackInput{
+  border-radius: 10px;
+  color: black;
+}
+
+#share{
+  display: inline-block;
+  margin-top: 15px;
+  padding: 12px 20px;
+  background-color: hsl(0, 100%, 30%);
+  color: white;
+  font-weight: bold;
+  border-radius: 10px;
+  font-size: 18px;
+}
+#share:hover{
+  background-color: hsl(0, 100%, 40%);
+}
+#share:active{
+  background-color: hsl(0, 100%, 50%);
+}
+#h3{
+  font-size: medium;
+  text-decoration: underline;
+}
+
+.intro-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: #f0f8ff;
+  text-align: center;
+  padding: 20px;
+}
+
+.intro-container h1 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+}
+
+.intro-container p {
+  font-size: 1.2rem;
+  margin-bottom: 30px;
+  max-width: 400px;
+}
+
+.intro-container button {
+  padding: 12px 24px;
+  font-size: 1.2rem;
+  background: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.intro-container button:hover {
+  background: #45a049;
+}
+#togame{
+  display: inline-block;
+  margin-top: 15px;
+  padding: 12px 20px;
+  background-color: hsl(0, 100%, 30%);
+  color: white;
+  font-weight: bold;
+  border-radius: 10px;
+  font-size: 18px;
+}
+#togame:hover{
+  background-color: hsl(0, 100%, 40%);
+}
+#togame:active{
+  background-color: hsl(0, 100%, 50%);
+}

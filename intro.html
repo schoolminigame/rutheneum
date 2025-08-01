@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Spielregeln</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Willkommen Fremder!</h1>
+    <p>Du hast eine QR Code gefunden und gescannt. Glückwunsch! Offensichtlich bist du einer der ersten hier... Well... kennst du Flappy Birds? Na dann leg los!
+         Und zeigs den anderen, sie sind wahrscheinlich besser als du... werden wir sehen...</p>
+        <p>Schaffst du es in die Top 10?</p>
+        <p>Ach ja, wenn du eine Idee hast, diese Seite zu verbessern oder dich anderweitig verewigen willst, schreib was ins Feedback Feld!</p>
+    <button id="togame" onclick="goToGame()">Lasst die Spiele beginnen!</button>
+  </div>
+
+  <script>
+    function goToGame() {
+      sessionStorage.setItem("introVisited", "true");
+      window.location.href = "index.html";
+    }
+  </script>
+</body>
+</html>
